@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
 const User = require('./Model/user');
+const Book = require('./Model/book');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const auth = require('./verifyToken');
@@ -29,26 +30,65 @@ router.post("/login",async(req,res)=>{
         } else {
             // res.send("Login Successfull....");
             const token =await jwt.sign({_id:user._id},"vision");
-            res.header("auth-token",token);
-            res.send(token);
+            res.send({token});
+            // res.header("auth-token",token);
         }
     }
 });
 
-//Public Route
-router.get("/books",(req,res)=>{
-    res.json({
-        title : "C/C++",
-        qty:52
-    })
-});
 
-//Private Route
-router.get("/bills",auth,(req,res)=>{
+// //Private Route
+router.get("/posts",auth,(req,res)=>{
     res.json({
         title : "Java",
         qty:60
     })
+});
+router.get("/comments",(req,res)=>{
+    res.json({
+        title : "Java",
+        qty:60
+    })
+});
+router.get("/books",auth,async(req,res)=>{
+    const books = await Book.find();
+    res.send(books);
+});
+
+router.post("/books",async (req,res)=>{
+
+    try {
+        const book = new Book({
+            name:req.body.name,
+            qty:req.body.qty
+            
+        });
+        await book.save();
+        res.send(book);
+        
+    } catch (error) {
+        res.status(404).send(error);
+        
+    }
+});
+
+router.patch("/books/:id",auth,async(req,res)=>{
+    try {
+        const book = await Book.findOne({_id:req.params.id});
+        if(req.body.name){
+            book.name = req.body.name;
+        }
+        await book.save();
+        res.send(book);
+    } catch (error) {
+        
+    }
+});
+
+
+router.get("/user/:id",async(req,res)=>{
+    const user = await User.findOne({_id:req.params.id});
+    res.send(user);
 });
 
 module.exports = router;
