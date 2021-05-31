@@ -8,7 +8,7 @@ module.exports = function (req,res,next){
     else{
         try {
             // console.log(token.split(' ')[1]);
-            jwt.verify(token.split(' ')[1],"vision");
+            jwt.verify(token.split(' ')[1],process.env.SECRET_KEY);
             next();
         } catch (error) {
             console.log(error);

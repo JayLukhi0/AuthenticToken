@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyparser = require('body-parser');
 const mongoose = require('mongoose');
@@ -12,7 +13,7 @@ mongoose.connect("mongodb://localhost:27017/emp",{useNewUrlParser:true,useUnifie
         app.use(express.json());
         app.use('/api',route);
         
-        app.listen(3000, ()=>{
+        app.listen(process.env.PORT||3000, ()=>{
             console.log("<-------Server Started-------->")
         });
     }

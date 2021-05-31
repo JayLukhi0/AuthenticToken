@@ -20,17 +20,19 @@ router.post("/register",async(req,res)=>{
 
 router.post("/login",async(req,res)=>{
     const user =await User.findOne({username:req.body.uname});
+    msg="";
     if(!user){
         return res.send("User not exist");
     }
     else{
         const isValid = await bcrypt.compare(req.body.pswd,user.pswd);
         if (!isValid) {
-            res.send("Password is not correct.......");
+            msg="Password is not correct.......";
+            res.send({msg});
         } else {
             // res.send("Login Successfull....");
-            const token =await jwt.sign({_id:user._id},"vision");
-            res.send({token});
+            const token =await jwt.sign({_id:user._id},process.env.SECRET_KEY);
+            res.send({token,msg});
             // res.header("auth-token",token);
         }
     }
